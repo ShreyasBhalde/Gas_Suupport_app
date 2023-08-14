@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <title>Customer Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+
+    .header {
+      background-color: #8ed3ea;
+      color: rgb(94, 29, 29);
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .b2 {
+      padding-right: 90px;
+      align-items: center;
+
+
+    }
+
+
+    .dashboard-container {
+      display: flex;
+      gap: 20px;
+      /* Adjust the gap as needed */
+    }
+
+    .account-info,
+    .message-section {
+      flex: 1;
+      padding: 20px;
+      border-radius: 5px;
+
+    }
+
+    .adjust {
+      padding-left: 500px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .buttonadjust {
+      padding-left: 200px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  {%if "first_name" in request.session%}
+  <div class="header">
+    <h1>Welcome, {{request.session.first_name}}!</h1>
+
+  </div>
+  {%else%}
+  <div class="header">
+    <h1>Welcome, not logged!</h1>
+
+  </div>
+  {%endif%}
+  <nav class="navbar navbar-expand-lg bg-secondary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">BHARATGAS</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active btn-outline-success" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" aria-disabled="true">Services </a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item ml-auto">
+            <a class="nav-link" href="/logout" class="btn btn-warning " role="button">Log Out</a>
+          </li>
+        </ul>
+      </div>
+      </ul>
+    </div>
+    </div>
+  </nav>
+
+
+  <div class="dashboard">
+    <h2>Your Service Requests</h2>
+    <table>
+      <tr>
+        <th>Request ID</th>
+        <th>Date Submitted</th>
+        <th>Status</th>
+        <th>Request Type</th>
+        <th>Estimated Resolving time</th>
+      </tr>
+      {% for serve, adjusted_date in service_data %}
+      <tr>
+        <td>{{ serve.id }}</td>
+        <td>{{ serve.request_date }}</td>
+        <td>{{ serve.status }}</td>
+        <td>{{ serve.request_type }}</td>
+        <td>{{ adjusted_date }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="dashboard-container">
+    {% for serve, adjusted_date in service_data %}
+    <div class="message-section">
+      <h2>Message from Executive</h2>
+      <table>
+        <tr>
+          <td><label for="remarks">Message for Request Id- {{ serve.id }}:</label></td>
+        </tr>
+        <tr>
+          <td><textarea id="remarks" name="remarks" rows="4" cols="50" readonly>{{ serve.remarks }}</textarea></td>
+        </tr>
+      </table>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="account-info">
+    <h2>Your Account Information</h2>
+    <p>Name: {{custs.first_name}} {{custs.last_name}}</p>
+    <p>Email: {{custs.email}}</p>
+    <p>Address: {{custs.address}}</p>
+    <p>Contact Number: {{custs.contact_no}}</p>
+    <!-- Add more account details here -->
+  </div>
+  </div>
+
+
+  <div class="adjust">
+    <div class="submit-request">
+      <h2>Submit a Request</h2>
+      <form method="post" action="/submit_request" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="request_type">Request Type:</label>
+        <select id="request_type" name="request_type">
+          <option value="Refill Request">Refill Request</option>
+          <option value="Complaint">Complaint</option>
+          <option value="Address Change">Address Change</option>
+          <option value="Enquiry">Enquiry</option>
+          Add more request types as needed
+        </select>
+        <br>
+        <br>
+        <label for="description">Description:</label><br>
+        <textarea id="description" name="description" rows="4" cols="50"></textarea>
+        <p>
+          <label for="attachment">Attachment:</label><br>
+          <input type="file" id="attachment" name="attachment">
+          <br>
+          <br>
+        <div class="buttonadjust">
+          <button type="submit" class="btn btn-outline-secondary">Submit Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+</body>
+</html>

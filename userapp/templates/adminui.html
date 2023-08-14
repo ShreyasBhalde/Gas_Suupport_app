@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Requests</title>
+</head>
+<body>
+    <h1>Manage Customer Requests</h1>
+    <table>
+        <tr>
+            <th>Request ID</th>
+            <th>Customer</th>
+            <th>Request Type</th>
+            <th>Status</th>
+            <th>Request Date</th>
+            <th>Details</th>
+            <th>Attachment</th>
+            <th>Change Status</th>
+        </tr>
+        {% for request in requests %}
+        <tr>
+            <td>{{ request.id }}</td>
+            <td>{{ request.customer }}</td>
+            <td>{{ request.request_type }}</td>
+            <td>{{ request.status }}</td>
+            <td>{{ request.request_date }}</td>
+            <td>{{ request.details }}</td>
+            <td>
+                {% if request.attachment %}
+                <a href="{{ request.attachment.url }}" target="_blank">Download</a>
+                {% else %}
+                N/A
+                {% endif %}
+            </td>
+            <td>
+                <form method="post" action="{% url 'change_status' request.id %}">
+                    {% csrf_token %}
+                    <select name="status">
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
